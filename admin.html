@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temple Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f7f1;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #d4af37;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #d4af37;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #b5942b;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    th {
+      background: #d4af37;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Temple Admin Panel</h1>
+  <div class="form-container">
+    <input type="text" id="name" placeholder="Donor Name">
+    <input type="number" id="amount" placeholder="Donation Amount">
+    <button onclick="addDonation()">Add Donation</button>
+    <button onclick="logout()" style="background:red;">Logout</button>
+  </div>
+
+  <table id="donationTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Check login
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    let donations = JSON.parse(localStorage.getItem("donations")) || [];
+
+    function renderTable() {
+      const tbody = document.querySelector("#donationTable tbody");
+      tbody.innerHTML = "";
+      donations.forEach((donation, index) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${donation.name}</td>
+            <td>${donation.amount}</td>
+            <td>
+              <button onclick="deleteDonation(${index})" style="background:red;color:white;border:none;padding:5px 10px;">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      localStorage.setItem("donations", JSON.stringify(donations));
+    }
+
+    function addDonation() {
+      const name = document.getElementById("name").value;
+      const amount = document.getElementById("amount").value;
+      if (name && amount) {
+        donations.push({ name, amount });
+        renderTable();
+        document.getElementById("name").value = "";
+        document.getElementById("amount").value = "";
+      }
+    }
+
+    function deleteDonation(index) {
+      donations.splice(index, 1);
+      renderTable();
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
